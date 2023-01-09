@@ -1,27 +1,25 @@
 const express = require('express');
 const mysql = require('mysql');
+const faker = require('@faker-js/faker')
 const app = express();
 const conn = mysql.createConnection({
-    host     : 'localhost',
+    host     : 'db',
     user     : 'root',
     password : 'root',
     database : 'nodedb'
 });
-conn.connect();
-const sql = `INSERT INTO nodedb.people(name) VALUES('Phelype')`
-conn.query(sql)
+const selectNameSql = 'SELECT * from nodedb.people'
 app.get('/', (req, res) => {
-    conn.query('SELECT * from nodedb.people', function (error, results, fields) {
+    const insertNameSql = `INSERT INTO nodedb.people(name) VALUES('${faker.faker.name.firstName()}')`
+    conn.query(insertNameSql)
+    conn.query(selectNameSql, function (error, results, fields) {
         if (error) throw error;
-        res.send(`<h1>Full Cicle<h1> \n <h2>${results[0].name}<h2>`)
+        let names = ''
+        results.forEach(row => {
+            names += `\n <h2>${row.name}<h2>`
+        })
+        res.send(`<h1>Full Cicle<h1> ${names}`)
     });
 })
 
-server = app.listen(3000, () => console.log('Server is up and running'));
-
-process.on('SIGINT', function() {
-    console.log("closing connection")
-    conn.end()
-    console.log("closing server")
-    server.close()
-});
+app.listen(3000, () => console.log('Server is up and running'));

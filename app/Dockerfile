@@ -10,4 +10,4 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 RUN npm install
 COPY . .
 EXPOSE 5000
-CMD dockerize -wait tcp://db:3306 -timeout 20s node index.js
+CMD dockerize -wait tcp://db:3306 -timeout 40s node index.js

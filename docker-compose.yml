@@ -6,6 +6,8 @@ services:
     image: phelype/app
     depends_on:
       - db
+    networks:
+      - node-network
     ports:
       - "3000:3000"
   nginx:
@@ -13,21 +15,30 @@ services:
     build:
       context: ./nginx
     image: phelype/nginx
+    networks:
+      - node-network
     ports:
       - "8080:80"
   db:
     image: mysql:5.7
     container_name: mydb
+    command: --innodb-use-native-aio=0
     restart: always
     tty: true
+    networks:
+      - node-network
     environment:
       MYSQL_DATABASE: 'nodedb'
       MYSQL_ROOT_PASSWORD: 'root'
     ports:
-      - '3306:3306'
+      - "3306:3306"
     volumes:
       - my-db:/var/lib/mysql
       - ./app/assets/sql:/docker-entrypoint-initdb.d
+
+networks:
+  node-network:
+    driver: bridge
 
 volumes:
   my-db:
